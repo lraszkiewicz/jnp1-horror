@@ -12,17 +12,19 @@ enum class citizen {
 
 template <typename T, citizen C>
 class Citizen {
-    static_assert(is_arithmetic<T>::value);
 public:
     template<typename U = T, typename =
-        enable_if_t<C == citizen::TEENAGER || C == citizen::ADULT, U>>
+            enable_if_t<(C == citizen::TEENAGER ||
+                         C == citizen::ADULT) &&
+                         is_arithmetic<T>::value, U>>
     Citizen(T health, T age) : _health(health), _age(age) {
         if (C == citizen::TEENAGER)
             assert(static_cast<T>(11) <= age && age <= static_cast<T>(17));
         else
             assert(static_cast<T>(18) <= age && age <= static_cast<T>(100));
     }
-    template<typename U = T, typename = enable_if_t<C == citizen::SHERIFF, U>>
+    template<typename U = T, typename =
+            enable_if_t<C == citizen::SHERIFF && is_arithmetic<T>::value, U>>
     Citizen(T health, T age, T attack_power)
             : _health(health), _age(age), _attack_power(attack_power) {
         assert(static_cast<T>(18) <= age && age <= static_cast<T>(100));
