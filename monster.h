@@ -1,10 +1,8 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
-#include <iostream>
+#include <algorithm>
 #include <cassert>
-
-using namespace std;
 
 enum class monster {
     ZOMBIE, VAMPIRE, MUMMY
@@ -17,10 +15,10 @@ public:
     template<typename U = T, typename = enable_if_t<is_arithmetic<T>::value, U>>
     Monster(T health, T attack_power)
             : _health(health), _attack_power(attack_power) {}
-    T getHealth() { return _health; }
-    T getAttackPower() { return _attack_power; }
+    T getHealth() const { return _health; }
+    T getAttackPower() const { return _attack_power; }
     void takeDamage(T damage) {
-        _health = max(_health - damage, static_cast<T>(0));
+        _health = std::max(_health - damage, static_cast<T>(0));
     }
 private:
     T _health, _attack_power;
@@ -44,4 +42,4 @@ void attack(Monster<T1, m>& monster, Citizen<T2, citizen::SHERIFF>& victim) {
     monster.takeDamage(victim.getAttackPower());
 }
 
-#endif
+#endif  // MONSTER_H
