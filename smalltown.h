@@ -2,7 +2,6 @@
 #define SMALLTOWN_H
 
 #include <algorithm>
-#include <array>
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -11,12 +10,7 @@
 
 #include "monster.h"
 
-using std::enable_if_t;
-using std::is_arithmetic;
-using std::integral_constant;
-
 namespace SmallTownH {
-
     template <typename U, size_t N>
     struct Fib {
         constexpr Fib() : fib() {
@@ -33,9 +27,9 @@ namespace SmallTownH {
     public:
         static constexpr Fib<U, N> fibStruct = SmallTownH::Fib<U, N>();
 
-        // Proof that the Fibonacci numbers are computed in compile time
-        // (proves only when maxFibIndex() >= 6, so that fib[6] exists).
+        // Proof that the Fibonacci numbers are computed in compile time.
         // C++14 or newer only, not supported in C++11.
+        static_assert(fibStruct.fib[0] == 0, "Fibonacci numbers error.");
         static_assert(N < 6 || fibStruct.fib[6] == 8,
                       "Fibonacci numbers error.");
     };
@@ -44,6 +38,7 @@ namespace SmallTownH {
     constexpr Fib<U, N> FibClass<U, N>::fibStruct;
 }
 
+
 template <typename M, typename U, U t0, U t1, typename... C>
 class SmallTown {
     static_assert(static_cast<U>(0) <= t0 && t0 <= t1,
@@ -51,7 +46,7 @@ class SmallTown {
 
 public:
     template <typename V = U,
-              typename = enable_if_t<is_arithmetic<U>::value, V>>
+              typename = std::enable_if_t<std::is_arithmetic<U>::value, V>>
     SmallTown(M monster, C... citizens)
             : _monster(monster), _citizens(citizens...) {
         _aliveCitizens = 0;
@@ -75,7 +70,7 @@ public:
         } else if (_aliveCitizens == 0) {
             std::cout << "MONSTER WON\n";
         } else if (std::binary_search(fibs_begin, fibs_end, _currentTime)) {
-            attackCitizens(std::make_index_sequence<sizeof...(C)>());
+            attackCitizens(_citizens);
         }
         _currentTime = (_currentTime + timeStep) % (t1 + static_cast<U>(1));
     }
@@ -85,6 +80,8 @@ private:
     U _currentTime = t0;
     std::tuple<C...> _citizens;
     size_t _aliveCitizens;
+
+    void increaseAliveCitizens() {}
 
     template <typename T>
     void increaseAliveCitizens(T citizen) {
@@ -105,19 +102,24 @@ private:
     }
 
     template <typename T>
-    void attackCitizen(T citizen) {
-        attack(_monster, citizen);
+    void attackCitizen(T& citizen) {
+        if (citizen.getHealth() > 0) {
+            attack(_monster, citizen);
+            if (citizen.getHealth() == 0)
+                --_aliveCitizens;
+        }
     }
 
-    template <typename T, typename... Args>
-    void attackCitizen(T citizen, Args... args) {
-        attackCitizen(citizen);
-        attackCitizen(args...);
-    }
+    // for_each on tuples - http://stackoverflow.com/questions/1198260/
+    template<std::size_t I = 0, typename... Tp>
+    inline typename std::enable_if<I == sizeof...(Tp), void>::type
+    attackCitizens(std::tuple<Tp...> &) {}
 
-    template <size_t... Is>
-    void attackCitizens(std::index_sequence<Is...>) {
-        attackCitizen(std::get<Is>(_citizens)...);
+    template<std::size_t I = 0, typename... Tp>
+    inline typename std::enable_if<I < sizeof...(Tp), void>::type
+    attackCitizens(std::tuple<Tp...>& t) {
+        attackCitizen(std::get<I>(t));
+        attackCitizens<I + 1, Tp...>(t);
     }
 
     template <typename T, monster>
@@ -143,8 +145,8 @@ private:
     // value1 == fib(i - 1), value2 == fib(i - 2)
     static constexpr size_t maxFibIndexRec(size_t i, U value1, U value2) {
         return
-            (value1 + value2 < value1 // integer overflow
-             || value1 + value2 > t1) // exceeded maximum value
+            (value1 + value2 < value1 || // integer overflow
+             value1 + value2 > t1) // or exceeded maximum value
             ? i - 1
             : maxFibIndexRec(i + 1, value1 + value2, value1);
     }

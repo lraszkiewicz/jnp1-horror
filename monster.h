@@ -5,8 +5,7 @@
 #include <cassert>
 #include <type_traits>
 
-using std::enable_if_t;
-using std::is_arithmetic;
+#include "citizen.h"
 
 enum class monster {
     ZOMBIE, VAMPIRE, MUMMY
@@ -17,7 +16,7 @@ class Monster {
 public:
     typedef T valueType;
     template <typename U = T,
-              typename = enable_if_t<is_arithmetic<T>::value, U>>
+              typename = std::enable_if_t<std::is_arithmetic<T>::value, U>>
     Monster(T health, T attack_power)
             : _health(health), _attack_power(attack_power) {}
     T getHealth() const { return _health; }
@@ -43,8 +42,9 @@ void attack(Monster<T1, m>& monster, Citizen<T2, c>& victim) {
 
 template <typename T1, monster m, typename T2>
 void attack(Monster<T1, m>& monster, Citizen<T2, citizen::SHERIFF>& victim) {
+    if (victim.getHealth() > 0)
+        monster.takeDamage(victim.getAttackPower());
     victim.takeDamage(monster.getAttackPower());
-    monster.takeDamage(victim.getAttackPower());
 }
 
 #endif  // MONSTER_H
