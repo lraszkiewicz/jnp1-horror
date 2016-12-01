@@ -4,6 +4,7 @@
 #define SMALLTOWN_H
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -64,6 +65,7 @@ public:
     }
 
     void tick(U timeStep) {
+        assert(timeStep > static_cast<U>(0));
         if (_monster.getHealth() == static_cast<typename M::valueType>(0)) {
             if (_aliveCitizens > 0)
                 std::cout << "CITIZENS WON\n";
@@ -113,11 +115,11 @@ private:
     }
 
     // for_each on tuples - http://stackoverflow.com/questions/1198260/
-    template<std::size_t I = 0, typename... Tp>
+    template<size_t I = 0, typename... Tp>
     inline typename std::enable_if<I == sizeof...(Tp), void>::type
     attackCitizens(std::tuple<Tp...> &) {}
 
-    template<std::size_t I = 0, typename... Tp>
+    template<size_t I = 0, typename... Tp>
     inline typename std::enable_if<I < sizeof...(Tp), void>::type
     attackCitizens(std::tuple<Tp...>& t) {
         attackCitizen(std::get<I>(t));
