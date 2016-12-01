@@ -20,7 +20,8 @@ public:
               typename = std::enable_if_t<std::is_arithmetic<T>::value, U>>
     Monster(T health, T attack_power)
             : _health(health), _attack_power(attack_power) {
-        assert(health > static_cast<T>(0) && attack_power > static_cast<T>(0));
+        assert(health >= static_cast<T>(0)
+               && attack_power >= static_cast<T>(0));
     }
 
     T getHealth() const { return _health; }

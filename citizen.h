@@ -17,7 +17,7 @@ public:
                                C == citizen::ADULT) &&
                                std::is_arithmetic<T>::value, U>>
     Citizen(T health, T age) : _health(health), _age(age) {
-        assert(health > static_cast<T>(0));
+        assert(health >= static_cast<T>(0));
         if (C == citizen::TEENAGER)
             assert(static_cast<T>(11) <= age && age <= static_cast<T>(17));
         else
@@ -29,7 +29,8 @@ public:
                                std::is_arithmetic<T>::value, U>>
     Citizen(T health, T age, T attack_power)
             : _health(health), _age(age), _attack_power(attack_power) {
-        assert(health > static_cast<T>(0) && attack_power > static_cast<T>(0));
+        assert(health >= static_cast<T>(0)
+               && attack_power >= static_cast<T>(0));
         assert(static_cast<T>(18) <= age && age <= static_cast<T>(100));
     }
 
@@ -37,7 +38,8 @@ public:
 
     T getAge() const { return _age; }
 
-    template <typename U = T, typename = std::enable_if_t<C == citizen::SHERIFF, U>>
+    template <typename U = T,
+              typename = std::enable_if_t<C == citizen::SHERIFF, U>>
     T getAttackPower() { return _attack_power; }
 
     void takeDamage(T damage) {
