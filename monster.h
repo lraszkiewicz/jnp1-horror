@@ -5,6 +5,8 @@
 #include <cassert>
 #include <type_traits>
 
+#include "citizen.h"
+
 using std::enable_if_t;
 using std::is_arithmetic;
 
@@ -16,23 +18,30 @@ template <typename T, monster>
 class Monster {
 public:
     typedef T valueType;
+
     template <typename U = T,
               typename = enable_if_t<is_arithmetic<T>::value, U>>
     Monster(T health, T attack_power)
             : _health(health), _attack_power(attack_power) {}
+
     T getHealth() const { return _health; }
+
     T getAttackPower() const { return _attack_power; }
+
     void takeDamage(T damage) {
         _health = std::max(_health - damage, static_cast<T>(0));
     }
+
 private:
     T _health, _attack_power;
 };
 
 template <typename T>
 using Zombie = Monster<T, monster::ZOMBIE>;
+
 template <typename T>
 using Vampire = Monster<T, monster::VAMPIRE>;
+
 template <typename T>
 using Mummy = Monster<T, monster::MUMMY>;
 

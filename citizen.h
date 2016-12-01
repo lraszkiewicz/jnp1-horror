@@ -25,27 +25,35 @@ public:
         else
             assert(static_cast<T>(18) <= age && age <= static_cast<T>(100));
     }
+
     template <typename U = T, typename =
               enable_if_t<C == citizen::SHERIFF && is_arithmetic<T>::value, U>>
     Citizen(T health, T age, T attack_power)
             : _health(health), _age(age), _attack_power(attack_power) {
         assert(static_cast<T>(18) <= age && age <= static_cast<T>(100));
     }
+
     T getHealth() const { return _health; }
+
     T getAge() const { return _age; }
+
     template <typename U = T, typename = enable_if_t<C == citizen::SHERIFF, U>>
     T getAttackPower() { return _attack_power; }
+
     void takeDamage(T damage) {
         _health = std::max(_health - damage, static_cast<T>(0));
     }
+
 private:
     T _health, _age, _attack_power;
 };
 
 template <typename T>
 using Adult = Citizen<T, citizen::ADULT>;
+
 template <typename T>
 using Teenager = Citizen<T, citizen::TEENAGER>;
+
 template <typename T>
 using Sheriff = Citizen<T, citizen::SHERIFF>;
 
