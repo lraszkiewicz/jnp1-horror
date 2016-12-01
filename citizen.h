@@ -1,3 +1,5 @@
+// Łukasz Raszkiewicz, Adam Sobecki
+
 #ifndef CITIZEN_H
 #define CITIZEN_H
 
@@ -9,12 +11,13 @@ enum class citizen {
     ADULT, TEENAGER, SHERIFF
 };
 
-template <typename T, citizen C>
+template <typename T, citizen C,
+          typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
 class Citizen {
 public:
     template <typename U = T, typename =
               std::enable_if_t<(C == citizen::TEENAGER ||
-                               C == citizen::ADULT) &&
+                                C == citizen::ADULT) &&
                                std::is_arithmetic<T>::value, U>>
     Citizen(T health, T age) : _health(health), _age(age) {
         assert(health >= static_cast<T>(0));

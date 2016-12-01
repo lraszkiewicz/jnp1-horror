@@ -1,3 +1,5 @@
+// Łukasz Raszkiewicz, Adam Sobecki
+
 #ifndef MONSTER_H
 #define MONSTER_H
 
@@ -11,7 +13,8 @@ enum class monster {
     ZOMBIE, VAMPIRE, MUMMY
 };
 
-template <typename T, monster>
+template <typename T, monster,
+          typename = std::enable_if_t<std::is_arithmetic<T>::value, T>>
 class Monster {
 public:
     typedef T valueType;

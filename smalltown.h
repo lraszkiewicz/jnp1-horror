@@ -1,3 +1,5 @@
+// Łukasz Raszkiewicz, Adam Sobecki
+
 #ifndef SMALLTOWN_H
 #define SMALLTOWN_H
 
@@ -39,7 +41,7 @@ namespace SmallTownH {
 }
 
 
-template <typename M, typename U, U t0, U t1, typename... C>
+template <typename M, typename U, U t0, U t1, typename... C,>
 class SmallTown {
     static_assert(static_cast<U>(0) <= t0 && t0 <= t1,
                   "SmallTown: incorrect time parameters.");
